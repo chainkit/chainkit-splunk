@@ -11,6 +11,6 @@ https://docs.splunk.com/Documentation/AddonBuilder/3.0.1/UserGuide/Installation
 ### 3) Add a Splunk Account
   1. Go to Configuration in Chainkit App.
   2. Add a Splunk Account; This account must have permission for accessing data that you need to export.
-
-### 4) Create an input
 <img width="1394" alt="Screen Shot 2020-06-02 at 4 02 41 PM" src="https://user-images.githubusercontent.com/47642039/83490570-3748a900-a4eb-11ea-94e3-bd750f6820d1.png">
+### 4) Create an input
+
