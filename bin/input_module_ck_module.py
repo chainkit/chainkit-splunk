@@ -143,20 +143,21 @@ def collect_events(helper, ew):
     opt_query = helper.get_arg("query")
     opt_earliest_time = int(helper.get_arg("earliest_time"))
     opt_latest_time = int(helper.get_arg("latest_time"))
+    opt_global_account = helper.get_arg("global_account")
     
     data = opt_username
     res = {}
     res["test"] = str("Hello")
     # account = helper.get_global_setting("demo")
-    cred = helper.get_user_credential_by_username("demo")
+    # cred = helper.get_user_credential_by_username("demo")
     proxy_settings = helper.get_proxy()
     
     # cred = helper.get_user_credential_by_username("admin")
     # account = helper.get_user_credential_by_username("bill")
     
     
-    username = cred.get("username")
-    password = cred.get("password")
+    username = opt_global_account.get("username")
+    password = opt_global_account.get("password")
     HOST = os.getenv("SPLUNK_HOST", "localhost")
     PORT = int(os.getenv("SPLUNK_PORT", "8089"))
     now = datetime.now()
@@ -190,11 +191,15 @@ def collect_events(helper, ew):
                 logs += [result]
         
         logs.sort()
-        hash = make_hash(str(logs))
+        _hash = make_hash(str(logs))
         
         import time
-        time.sleep(1)
+        # time.sleep(1)
         input_type = helper.get_input_type()
+        # temp = {}
+        # temp["test"] = username
+        # event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(temp))
+        # ew.write_event(event)  
         # import random
         # for stanza_name in helper.get_input_stanza_names():
         #     data = "Test Message" + str(random.randint(0,100))
@@ -203,6 +208,7 @@ def collect_events(helper, ew):
         #     event = helper.new_event(source=input_type, index=helper.get_output_index(stanza_name), sourcetype=helper.get_sourcetype(stanza_name), data=json.dumps(res))
         #     ew.write_event(event)
         logindata = login(opt_username, opt_password)
+        # time.sleep(1)
         res = {}
         # test = str(logindata)
         # res = {}
@@ -211,16 +217,24 @@ def collect_events(helper, ew):
         # event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(res))
         # ew.write_event(event)    
 
-        res["hash"] = str(hash)
+        res["hash"] = str(_hash)
         res["query"] = opt_query
         res["title"] = opt_search_name
-        time = (datetime.now()).strftime('%Y-%m-%dT%H:%M:%S')
-        res["running_script"] = time
-        entityId = register(logindata, hash, opt_storage)
+        _time = (datetime.now()).strftime('%Y-%m-%dT%H:%M:%S')
+        res["running_script"] = _time
+        # event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(logindata))
+        # ew.write_event(event) 
+        # time.sleep(3)
+        entityId = register(logindata, _hash, opt_storage)
+        # time.sleep(1)
+        # event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(res))
+        # ew.write_event(event)   
+        # time.sleep(1)
         res["assetId"] = entityId["assetId"]
         res["earliest_time"] = earliest_time
         res["latest_time"] = latest_time
         res["length"] = len(logs)
+        # ew.write_event(event)    
         event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(res))
         ew.write_event(event)    
         
@@ -332,7 +346,7 @@ def register(login_data, hash, storage="pencil"):
     datajson["hash"] = hash
     datajson["storage"] = storage
     url = "https://api.chainkit.com/register/"
-    print(login_data)
+    # print(login_data)
     head = {"Content-Type": "application/json",
             "Authorization": "Bearer {0}".format(login_data['data']['accessToken'])}  # Request HTTP headers
     res = requests.request("POST", url, data=json.dumps(datajson), headers=head)
