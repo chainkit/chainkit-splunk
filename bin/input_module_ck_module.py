@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 import requests
 import hashlib
 
-
 '''
     IMPORTANT
     Edit only the validate_input and collect_events functions.
@@ -143,34 +142,33 @@ def collect_events(helper, ew):
     opt_query = helper.get_arg("query")
     opt_earliest_time = int(helper.get_arg("earliest_time"))
     opt_latest_time = int(helper.get_arg("latest_time"))
+    # Splunk Account
     opt_global_account = helper.get_arg("global_account")
+    opt_export_logs = helper.get_arg("export_logs")
     
     data = opt_username
     res = {}
-    res["test"] = str("Hello")
-    # account = helper.get_global_setting("demo")
-    # cred = helper.get_user_credential_by_username("demo")
+
     proxy_settings = helper.get_proxy()
-    
-    # cred = helper.get_user_credential_by_username("admin")
-    # account = helper.get_user_credential_by_username("bill")
     
     
     username = opt_global_account.get("username")
     password = opt_global_account.get("password")
+    
     HOST = os.getenv("SPLUNK_HOST", "localhost")
     PORT = int(os.getenv("SPLUNK_PORT", "8089"))
     now = datetime.now()
+    now = now - timedelta(seconds=now.second)
     service = client.connect(
         host=HOST,
         port=PORT,
         username=username,
         password=password)
-    # saved_search = service.saved_searches.create(opt_search_name, opt_query)
     
-    earliest_time = (now - timedelta(seconds=-opt_earliest_time + 10)).strftime(
+    earliest_time = (now - timedelta(seconds=-opt_earliest_time)).strftime(
         '%Y-%m-%dT%H:%M:%S')
-    latest_time = (now - timedelta(seconds=-opt_latest_time + 10)).strftime('%Y-%m-%dT%H:%M:%S')
+    latest_time = (now - timedelta(seconds=-opt_latest_time)).strftime('%Y-%m-%dT%H:%M:%S')
+    
     kwargs_export = {"earliest_time": earliest_time,
                      "latest_time": latest_time,
                      "search_mode": "normal",
@@ -181,62 +179,40 @@ def collect_events(helper, ew):
     reader = results.ResultsReader(exportsearch_results)
     
     logs = []
-    res = {}
+    
     if opt_api == "register":
 
         for result in reader:
-            input_type = helper.get_input_type()
-            
             if isinstance(result, dict):
-                logs += [result]
+                logs += [list(result)]
         
         logs.sort()
-        _hash = make_hash(str(logs))
-        
-        import time
-        # time.sleep(1)
-        input_type = helper.get_input_type()
-        # temp = {}
-        # temp["test"] = username
-        # event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(temp))
-        # ew.write_event(event)  
-        # import random
-        # for stanza_name in helper.get_input_stanza_names():
-        #     data = "Test Message" + str(random.randint(0,100))
-        #     res = {}
-        #     res["message"] = data
-        #     event = helper.new_event(source=input_type, index=helper.get_output_index(stanza_name), sourcetype=helper.get_sourcetype(stanza_name), data=json.dumps(res))
-        #     ew.write_event(event)
+        length = len(logs)
+        if opt_export_logs == "raw_data":
+            logs = str(logs)
+        elif opt_export_logs == "no_space":
+            logs = str(logs).replace(" ", "")
+        _hash = make_hash(logs)
+
         logindata = login(opt_username, opt_password)
-        # time.sleep(1)
-        res = {}
-        # test = str(logindata)
-        # res = {}
-        # res["test"] = "abc"
+        entityId = register(logindata, _hash, opt_storage)
         
-        # event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(res))
-        # ew.write_event(event)    
+        res = {}
 
         res["hash"] = str(_hash)
         res["query"] = opt_query
         res["title"] = opt_search_name
         _time = (datetime.now()).strftime('%Y-%m-%dT%H:%M:%S')
         res["running_script"] = _time
-        # event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(logindata))
-        # ew.write_event(event) 
-        # time.sleep(3)
-        entityId = register(logindata, _hash, opt_storage)
-        # time.sleep(1)
-        # event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(res))
-        # ew.write_event(event)   
-        # time.sleep(1)
-        res["assetId"] = entityId["assetId"]
+        res["assetId"] = entityId.get("assetId")
         res["earliest_time"] = earliest_time
         res["latest_time"] = latest_time
-        res["length"] = len(logs)
-        # ew.write_event(event)    
-        event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(res))
-        ew.write_event(event)    
+        res["length"] = length
+        res["export_logs"] = opt_export_logs
+        
+        _event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(res))
+        ew.write_event(_event)
+        
         
     if opt_api == "verify":
         
@@ -245,69 +221,59 @@ def collect_events(helper, ew):
             if isinstance(result, dict):
                 
                 dict_res = result["_raw"]
-    
                 dict_res = json.loads(dict_res)
+                
                 assetId = dict_res["assetId"]
                 earliest_time = dict_res["earliest_time"]
                 latest_time = dict_res["latest_time"]
                 query_hash = dict_res["query"]
                 title = dict_res["title"]
-                
-                # entityId_lst = dict_res["entityId_lst"]
-                # hash_lst = dict_res["hash_lst"]
+                export_logs = dict_res["export_logs"]
                 reg_time = result["_time"]
-                logs =[]
-                _latest_time = datetime.strptime(latest_time, '%Y-%m-%dT%H:%M:%S')
+                
                 kwargs_export = {"earliest_time": earliest_time,
                                  "latest_time": latest_time,
                                  "search_mode": "normal",
                                  "preview": False
                                  }
                 
-                if query_hash[0] != "|":
-                    searchquery_export = "search {}".format(query_hash)
-                else:
-                    searchquery_export = query_hash
-                exportsearch_results = service.jobs.export(searchquery_export, **kwargs_export)
+                searchquery_export = query_hash
+                
+                exportsearch_results = service.jobs.export(str(searchquery_export), **kwargs_export)
                 reader = results.ResultsReader(exportsearch_results)
-                curr_log = []
+                logs =[]
                 for result in reader:
                     if isinstance(result, dict):
-                        logs += [result]
-                        curr_log += [result]
-                curr_log.sort()
-                curr_hash = make_hash(str(curr_log))
-                # if curr_hash == hash_lst[i]:
-                #     verify_lst += [True]
-                # else:
-                #     verify_lst += [False]
-                res = {}
+                        logs += [list(result)]
+
+                
                 logs.sort()
-                hash = make_hash(str(logs))
+                length = len(logs)
+                if export_logs == "raw_data":
+                    logs = str(logs)
+                elif export_logs == "no_space":
+                    logs = str(logs).replace(" ", "")
+                _hash = make_hash(logs)
                 
                 logindata = login(opt_username, opt_password)
-                response = verify(logindata, assetId, hash, opt_storage)
-                verified = response["verified"]
+                response = verify(logindata, assetId, _hash, opt_storage)
+                verified = response.get("verified")
+                res = {}
+                res["run_script"] = (datetime.now()).strftime('%Y-%m-%dT%H:%M:%S')
                 res["verified"] = verified
                 res["assetId"] = assetId
                 res["earliest_time"] = earliest_time
                 res["latest_time"] = latest_time
-                res["hash"] = hash
+                res["hash"] = _hash
                 res["query"] = query_hash
                 res["title"] = title
                 res["reg_time"] = reg_time
-                res["run_script"] = (datetime.now()).strftime('%Y-%m-%dT%H:%M:%S')
-                res["length"] = len(logs)
+                res["length"] = length
+                res["export_logs"] = export_logs
+                
                 event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(res))
-                ew.write_event(event)    
-    # import random
-    # input_type = helper.get_input_type()
-    # for stanza_name in helper.get_input_stanza_names():
-    #     data = "Test Message" + str(random.randint(0,100))
-    #     res = {}
-    #     res["message"] = data
-    #     event = helper.new_event(source=input_type, index=helper.get_output_index(stanza_name), sourcetype=helper.get_sourcetype(stanza_name), data=json.dumps(res))
-    #     ew.write_event(event)
+                ew.write_event(event)
+
 
 def login(username, password):
     """Construct an ProvenanceValidator object by logging in to the
@@ -319,7 +285,7 @@ def login(username, password):
     user's AccessToken. If the authentication fails, an exception is raised
     (actually a HTTPError: Bad Request)."""
 
-    url = 'https://api.chainkit.com/token'
+    url = 'https://api.pencildata.com/token'
     data = {'userId': username, 'password': password}
     head = {"Content-Type": "application/json"}
     res = requests.request("POST", url, data=json.dumps(data), headers=head)
@@ -331,6 +297,7 @@ def make_hash(val):
     hash_object.update(val.encode('utf-8'))
     return hash_object.hexdigest()
 
+### This function is to register hash to blockchain
 def register(login_data, hash, storage="pencil"):
     """Register a file (by its SHA-256 hash) in your Pencildata account.
     Warning: this method does not check if the file hash exists in the
@@ -342,17 +309,18 @@ def register(login_data, hash, storage="pencil"):
     public or in the private database at the PencilDATA server."""
 
     datajson = {}
-    #print(hash)
+
     datajson["hash"] = hash
     datajson["storage"] = storage
-    url = "https://api.chainkit.com/register/"
-    # print(login_data)
+    url = "https://api.pencildata.com/register/"
+
     head = {"Content-Type": "application/json",
             "Authorization": "Bearer {0}".format(login_data['data']['accessToken'])}  # Request HTTP headers
     res = requests.request("POST", url, data=json.dumps(datajson), headers=head)
 
     return res.json()
-    
+
+### This function is to verify hash against hash in blockchain
 def verify(login_data, asset_id, hash, storage="pencil"):
     """Register a file (by its SHA-256 hash) in your Pencildata account.
     Warning: this method does not check if the file hash exists in the
@@ -367,12 +335,10 @@ def verify(login_data, asset_id, hash, storage="pencil"):
     datajson = {}
     datajson["hash"] = hash
     datajson["storage"] = storage
-    url = "https://api.chainkit.com/verify/" + str(asset_id)
+    url = "https://api.pencildata.com/verify/" + str(asset_id)
     head = {"Content-Type": "application/json",
             "Authorization": "Bearer {0}".format(login_data['data']['accessToken'])}  # Request HTTP headers
     res = requests.request("GET", url, params=datajson, headers=head)
     return res.json()
-# def register():
-    
-    # print(opt_username)
+
 

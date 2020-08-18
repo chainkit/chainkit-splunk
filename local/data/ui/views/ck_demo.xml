@@ -1,0 +1,103 @@
+<form theme="light">
+  <label>Chainkit Splunk log hardening</label>
+  <search id="base_search">
+    <query>
+      index="ck_verify" | table assetId, hash, query, length, title, verified
+    </query>
+  </search>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="assetId">
+      <label>Asset Id</label>
+      <search base="base_search">
+        <query>| stats count by assetId
+      </query>
+      </search>
+      <choice value="*">All</choice>
+      <fieldForLabel>assetId</fieldForLabel>
+      <fieldForValue>assetId</fieldForValue>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="title">
+      <label>Title</label>
+      <search base="base_search">
+        <query>| stats count by title
+      </query>
+      </search>
+      <choice value="*">All</choice>
+      <fieldForLabel>title</fieldForLabel>
+      <fieldForValue>title</fieldForValue>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="hash">
+      <label>Hash</label>
+      <search base="base_search">
+        <query>| stats count by hash
+      </query>
+      </search>
+      <choice value="*">All</choice>
+      <fieldForLabel>hash</fieldForLabel>
+      <fieldForValue>hash</fieldForValue>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>CK Total Events</title>
+        <search base="base_search">
+          <query>| search title=$title$ hash=$hash$ | stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">117</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0x555"]</option>
+        <option name="rangeValues">[0,30,70]</option>
+        <option name="underLabel">Total Events</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <h2>Powered by</h2>
+        <img src="data:image/png;base64,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" align="middle" width="300" height="300"/>
+      </html>
+    </panel>
+    <panel>
+      <chart>
+        <title>Events by Input Source</title>
+        <search base="base_search">
+          <query>| search title=$title$ hash=$hash$ | stats count by title</query>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>CK Verified Events (by system)</title>
+        <search base="base_search">
+          <query>| search title=$title$ hash=$hash$ | stats count by verified</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.labels">[info, error]</option>
+        <option name="charting.seriesColors">[0x00FF00,0xFF0000]</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Event Details</title>
+        <search base="base_search">
+          <query>| search title=$title$ hash=$hash$</query>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

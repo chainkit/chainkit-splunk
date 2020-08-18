@@ -57,11 +57,8 @@ fields = [
         'storage',
         required=True,
         encrypted=False,
-        default=None,
-        validator=validator.String(
-            min_len=0, 
-            max_len=8192, 
-        )
+        default='pencil',
+        validator=None
     ), 
     field.RestField(
         'api',
@@ -109,6 +106,20 @@ fields = [
             min_len=0, 
             max_len=8192, 
         )
+    ), 
+    field.RestField(
+        'global_account',
+        required=True,
+        encrypted=False,
+        default=None,
+        validator=None
+    ), 
+    field.RestField(
+        'export_logs',
+        required=False,
+        encrypted=False,
+        default='raw_data',
+        validator=None
     ), 
 
     field.RestField(

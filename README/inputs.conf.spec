@@ -6,4 +6,6 @@ api =
 search_name = 
 query = 
 earliest_time = 
-latest_time =
+latest_time = 
+global_account = 
+export_logs = It is not required for Verify API
