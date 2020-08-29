@@ -16,6 +16,7 @@ import hashlib
     This file is generated only once when creating the modular input.
 '''
 
+ENDPOINT = "https://demo-api.chainkit.com/"
 
 def validate_input(helper, definition):
     pass
@@ -179,7 +180,7 @@ def login(username, password):
     populated by a dictionary that (among other things) contains the
     user's AccessToken. If the authentication fails, an exception is raised
     (actually a HTTPError: Bad Request)."""
-    url = 'https://demo-api.chainkit.com/token'
+    url = ENDPOINT + 'token'
     data = {'userId': username, 'password': password}
     head = {"Content-Type": "application/json"}
     res = requests.request("POST", url, data=json.dumps(data), headers=head)
@@ -204,7 +205,7 @@ def register(login_data, hash, storage="pencil"):
     datajson = {}
     datajson["hash"] = hash
     datajson["storage"] = storage
-    url = "https://demo-api.chainkit.com/register/"
+    url = ENDPOINT + "register/"
     head = {"Content-Type": "application/json",
             "Authorization": "Bearer {0}".format(login_data['data']['accessToken'])}  # Request HTTP headers
     res = requests.request("POST", url, data=json.dumps(datajson), headers=head)
@@ -225,7 +226,7 @@ def verify(login_data, asset_id, hash, storage="pencil"):
     datajson = {}
     datajson["hash"] = hash
     datajson["storage"] = storage
-    url = "https://demo-api.chainkit.com/verify/" + str(asset_id)
+    url = ENDPOINT + "verify/{}".format(str(asset_id))
     head = {"Content-Type": "application/json",
             "Authorization": "Bearer {0}".format(login_data['data']['accessToken'])}  # Request HTTP headers
     res = requests.request("GET", url, params=datajson, headers=head)
