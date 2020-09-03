@@ -45,17 +45,17 @@ modtime = 1589213506.489466000
 [passwords/credential%3A__REST_CREDENTIAL__%23TA-chainkit%23data%2Finputs%2Fck_module%3Ack_verify%60%60splunk_cred_sep%60%601%3A]
 owner = demo
 version = 8.0.4.1
-modtime = 1597758803.843302000
+modtime = 1598103968.905626000
 
 [passwords/credential%3A__REST_CREDENTIAL__%23TA-chainkit%23data%2Finputs%2Fck_module%3Ack_verify%60%60splunk_cred_sep%60%602%3A]
 owner = demo
 version = 8.0.4.1
-modtime = 1597758804.090701000
+modtime = 1598103968.927763000
 
 [inputs/ck_module%3A%2F%2Fck_verify]
 owner = demo
 version = 8.0.4.1
-modtime = 1597758980.045969000
+modtime = 1598103969.344442000
 
 [passwords/credential%3A__REST_CREDENTIAL__%23TA-chainkit%23data%2Finputs%2Fck_module%3ATest%60%60splunk_cred_sep%60%601%3A]
 owner = splunk-system-user
@@ -90,17 +90,17 @@ modtime = 1594023481.132181000
 [passwords/credential%3A__REST_CREDENTIAL__%23TA-chainkit%23data%2Finputs%2Fck_module%3Ack_register%60%60splunk_cred_sep%60%601%3A]
 owner = demo
 version = 8.0.4.1
-modtime = 1597720919.727895000
+modtime = 1598103893.119191000
 
 [passwords/credential%3A__REST_CREDENTIAL__%23TA-chainkit%23data%2Finputs%2Fck_module%3Ack_register%60%60splunk_cred_sep%60%602%3A]
 owner = demo
 version = 8.0.4.1
-modtime = 1597720919.911492000
+modtime = 1598103893.305842000
 
 [inputs/ck_module%3A%2F%2Fck_register]
 owner = demo
 version = 8.0.4.1
-modtime = 1597720923.094138000
+modtime = 1598103896.993964000
 
 [passwords/credential%3A__REST_CREDENTIAL__%23TA-chainkit%23data%2Finputs%2Fck_module%3Atstats_audit%60%60splunk_cred_sep%60%601%3A]
 owner = demo
@@ -130,7 +130,7 @@ modtime = 1595304456.172223000
 [inputs/ck_module%3A%2F%2Ftstats_attack]
 owner = demo
 version = 8.0.4.1
-modtime = 1595304456.589073000
+modtime = 1598639282.103461000
 
 [inputs/monitor%3A%2F%2F%2Ftmp%2Fmain]
 owner = demo
@@ -152,8 +152,23 @@ modtime = 1595833583.099191000
 [views/ck_demo]
 owner = demo
 version = 8.0.4.1
-modtime = 1597401855.760544000
+modtime = 1598047548.604107000
 
 [nav/default]
 version = 8.0.4.1
 modtime = 1597755539.214810000
+
+[passwords/credential%3A__REST_CREDENTIAL__%23TA-chainkit%23configs%2Fconf-ta_chainkit_account%3Awrong_cred%60%60splunk_cred_sep%60%601%3A]
+owner = demo
+version = 8.0.4.1
+modtime = 1598103118.384009000
+
+[passwords/credential%3A__REST_CREDENTIAL__%23TA-chainkit%23configs%2Fconf-ta_chainkit_account%3Awrong_cred%60%60splunk_cred_sep%60%602%3A]
+owner = demo
+version = 8.0.4.1
+modtime = 1598103118.443312000
+
+[ta_chainkit_account/wrong_cred]
+owner = demo
+version = 8.0.4.1
+modtime = 1598103118.486171000

@@ -54,6 +54,10 @@ class ModInputck_module(modinput_wrapper.base_modinput.BaseModInput):
                                          description="",
                                          required_on_create=True,
                                          required_on_edit=False))
+        scheme.add_argument(smi.Argument("endpoint", title="Endpoint",
+                                         description="",
+                                         required_on_create=True,
+                                         required_on_edit=False))
         scheme.add_argument(smi.Argument("storage", title="Storage",
                                          description="",
                                          required_on_create=True,
@@ -62,7 +66,7 @@ class ModInputck_module(modinput_wrapper.base_modinput.BaseModInput):
                                          description="",
                                          required_on_create=True,
                                          required_on_edit=False))
-        scheme.add_argument(smi.Argument("search_name", title="Search_name",
+        scheme.add_argument(smi.Argument("title", title="Title",
                                          description="",
                                          required_on_create=True,
                                          required_on_edit=False))
@@ -75,10 +79,6 @@ class ModInputck_module(modinput_wrapper.base_modinput.BaseModInput):
                                          required_on_create=True,
                                          required_on_edit=False))
         scheme.add_argument(smi.Argument("latest_time", title="Latest_time",
-                                         description="",
-                                         required_on_create=True,
-                                         required_on_edit=False))
-        scheme.add_argument(smi.Argument("global_account", title="Global Account",
                                          description="",
                                          required_on_create=True,
                                          required_on_edit=False))
@@ -101,7 +101,6 @@ class ModInputck_module(modinput_wrapper.base_modinput.BaseModInput):
 
     def get_account_fields(self):
         account_fields = []
-        account_fields.append("global_account")
         return account_fields
 
     def get_checkbox_fields(self):

@@ -1,2 +1,14 @@
 .idea
 *.pyc
+.DS_Store
+*.orig
+.coverage
+*.egg-info
+dist
+build
+.tox
+.eggs
+.python-version
+venv
+local
+coverage_reports
