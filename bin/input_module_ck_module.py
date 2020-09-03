@@ -108,7 +108,7 @@ def register_api(reader, input_data, helper, ew):  # pylint: disable=too-many-lo
         "hash": str(_hash),
         "query": input_data["opt_query"],
         "title": input_data["opt_search_name"],
-        "_time": _time,
+        "_time": _timestr,
         "running_script": _timestr,
         "assetId": entity_id.get("assetId"),
         "earliest_time": input_data["earliest_time"],
@@ -175,7 +175,7 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
             res = {
                 "verified": verified,
                 "assetId": asset_id,
-                "_time": _time,
+                "_time": _timestr,
                 "earliest_time": earliest_time,
                 "latest_time": latest_time,
                 "hash": hash_,
