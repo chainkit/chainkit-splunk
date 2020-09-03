@@ -3,12 +3,13 @@
 .DS_Store
 *.orig
 .coverage
-*.egg-info
+coverage_reports
 dist
 build
 .tox
+*.egg-info
 .eggs
 .python-version
 venv
 local
-coverage_reports
+local.meta
