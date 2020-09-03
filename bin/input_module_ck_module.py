@@ -102,12 +102,14 @@ def register_api(reader, input_data, helper, ew):  # pylint: disable=too-many-lo
     logindata = login(opt_username, opt_password, opt_endpoint)
     entity_id = register(logindata, _hash, opt_endpoint, opt_storage)
 
-    _time = (datetime.now()).strftime('%Y-%m-%dT%H:%M:%S')
+    _time = datetime.now()
+    _timestr = _time.strftime('%Y-%m-%dT%H:%M:%S')
     res = {
         "hash": str(_hash),
         "query": input_data["opt_query"],
         "title": input_data["opt_search_name"],
-        "running_script": _time,
+        "_time": _time,
+        "running_script": _timestr,
         "assetId": entity_id.get("assetId"),
         "earliest_time": input_data["earliest_time"],
         "latest_time": input_data["latest_time"],
@@ -168,16 +170,18 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
                               opt_storage)
             verified = response.get("verified")
 
+            _time = datetime.now()
+            _timestr = _time.strftime('%Y-%m-%dT%H:%M:%S')
             res = {
                 "verified": verified,
                 "assetId": asset_id,
-                "_time": (datetime.now()).strftime('%Y-%m-%dT%H:%M:%S'),
+                "_time": _time,
                 "earliest_time": earliest_time,
                 "latest_time": latest_time,
                 "hash": hash_,
                 "query": query_hash,
                 "title": title,
-                "run_script": (datetime.now()).strftime('%Y-%m-%dT%H:%M:%S'),
+                "running_script": _timestr,
                 "length": length,
                 "export_logs": export_logs
             }
