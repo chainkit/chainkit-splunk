@@ -54,6 +54,16 @@ fields = [
         )
     ), 
     field.RestField(
+        'endpoint',
+        required=True,
+        encrypted=False,
+        default='https://api.chainkit.com',
+        validator=validator.String(
+            min_len=0, 
+            max_len=8192, 
+        )
+    ), 
+    field.RestField(
         'storage',
         required=True,
         encrypted=False,
@@ -68,7 +78,7 @@ fields = [
         validator=None
     ), 
     field.RestField(
-        'search_name',
+        'title',
         required=True,
         encrypted=False,
         default=None,
@@ -106,13 +116,6 @@ fields = [
             min_len=0, 
             max_len=8192, 
         )
-    ), 
-    field.RestField(
-        'global_account',
-        required=True,
-        encrypted=False,
-        default=None,
-        validator=None
     ), 
     field.RestField(
         'export_logs',

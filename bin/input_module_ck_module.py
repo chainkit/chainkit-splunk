@@ -27,7 +27,7 @@ def collect_events(helper, ew):
     opt_password = helper.get_arg('password')
     opt_storage = helper.get_arg('storage')
     opt_api = helper.get_arg('api')
-    opt_search_name = helper.get_arg("search_name")
+    opt_search_name = helper.get_arg("title")
     opt_query = helper.get_arg("query")
     opt_earliest_time = int(helper.get_arg("earliest_time"))
     opt_latest_time = int(helper.get_arg("latest_time"))
@@ -88,7 +88,7 @@ def register_api(reader, input_data, helper, ew):
     opt_password = input_data["opt_password"]
     opt_storage = input_data["opt_storage"]
     opt_endpoint = input_data["opt_endpoint"]
-
+    
     if opt_export_logs == "raw_data":
         logs = str(logs)
     elif opt_export_logs == "no_space":
@@ -115,8 +115,8 @@ def register_api(reader, input_data, helper, ew):
                              sourcetype=helper.get_sourcetype(), data=json.dumps(res))
     ew.write_event(event)
 
-
 def verify_api(reader, input_data, service, helper, ew):
+
     opt_username = input_data["opt_username"]
     opt_password = input_data["opt_password"]
     opt_storage = input_data["opt_storage"]
@@ -175,7 +175,6 @@ def verify_api(reader, input_data, service, helper, ew):
             event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(),
                                      sourcetype=helper.get_sourcetype(), data=json.dumps(res))
             ew.write_event(event)
-
 
 def login(username, password, opt_endpoint):
     """Construct an ProvenanceValidator object by logging in to the

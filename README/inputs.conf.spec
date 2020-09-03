@@ -1,11 +1,11 @@
 [ck_module://<name>]
 username = 
 password = 
+endpoint = 
 storage = 
 api = 
-search_name = 
+title = 
 query = 
 earliest_time = 
 latest_time = 
-global_account = 
 export_logs = It is not required for Verify API

@@ -5,7 +5,7 @@
       index="ck_verify" | table assetId, hash, query, length, title, verified
     </query>
   </search>
-  <fieldset submitButton="false">
+  <fieldset submitButton="false" autoRun="true">
     <input type="dropdown" token="assetId">
       <label>Asset Id</label>
       <search base="base_search">
