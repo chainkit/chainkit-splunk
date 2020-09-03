@@ -16,13 +16,13 @@ import hashlib
     This file is generated only once when creating the modular input.
 '''
 
-ENDPOINT = "https://demo-api.chainkit.com/"
 
 def validate_input(helper, definition):
     pass
 
 
 def collect_events(helper, ew):
+    opt_search_name = helper.get_arg('name')
     opt_username = helper.get_arg('username')
     opt_password = helper.get_arg('password')
     opt_storage = helper.get_arg('storage')
@@ -32,6 +32,7 @@ def collect_events(helper, ew):
     opt_earliest_time = int(helper.get_arg("earliest_time"))
     opt_latest_time = int(helper.get_arg("latest_time"))
     opt_export_logs = helper.get_arg("export_logs")
+    opt_endpoint = helper.get_arg("endpoint")
 
     input_data = {}
     input_data["opt_username"] = opt_username
@@ -40,6 +41,7 @@ def collect_events(helper, ew):
     input_data["opt_export_logs"] = opt_export_logs
     input_data["opt_query"] = opt_query
     input_data["opt_search_name"] = opt_search_name
+    input_data["opt_endpoint"] = opt_endpoint
 
     HOST = os.getenv("SPLUNK_HOST", "localhost")
     PORT = int(os.getenv("SPLUNK_PORT", "8089"))
@@ -85,6 +87,8 @@ def register_api(reader, input_data, helper, ew):
     opt_username = input_data["opt_username"]
     opt_password = input_data["opt_password"]
     opt_storage = input_data["opt_storage"]
+    opt_endpoint = input_data["opt_endpoint"]
+
     if opt_export_logs == "raw_data":
         logs = str(logs)
     elif opt_export_logs == "no_space":
@@ -92,8 +96,8 @@ def register_api(reader, input_data, helper, ew):
     _hash = make_hash(logs)
 
     input_type = helper.get_input_type()
-    logindata = login(opt_username, opt_password)
-    entityId = register(logindata, _hash, opt_storage)
+    logindata = login(opt_username, opt_password, opt_endpoint)
+    entityId = register(logindata, _hash, opt_endpoint, opt_storage)
 
     res = {}
     res["hash"] = str(_hash)
@@ -111,11 +115,12 @@ def register_api(reader, input_data, helper, ew):
                              sourcetype=helper.get_sourcetype(), data=json.dumps(res))
     ew.write_event(event)
 
-def verify_api(reader, input_data, service, helper, ew):
 
+def verify_api(reader, input_data, service, helper, ew):
     opt_username = input_data["opt_username"]
     opt_password = input_data["opt_password"]
     opt_storage = input_data["opt_storage"]
+    opt_endpoint = input_data["opt_endpoint"]
     for result in reader:
         if isinstance(result, dict):
             dict_res = result["_raw"]
@@ -151,8 +156,8 @@ def verify_api(reader, input_data, service, helper, ew):
                 logs = str(logs).replace(" ", "")
             hash = make_hash(logs)
 
-            logindata = login(opt_username, opt_password)
-            response = verify(logindata, assetId, hash, opt_storage)
+            logindata = login(opt_username, opt_password, opt_endpoint)
+            response = verify(logindata, assetId, hash, opt_endpoint, opt_storage)
             verified = response.get("verified")
 
             res["verified"] = verified
@@ -171,7 +176,8 @@ def verify_api(reader, input_data, service, helper, ew):
                                      sourcetype=helper.get_sourcetype(), data=json.dumps(res))
             ew.write_event(event)
 
-def login(username, password):
+
+def login(username, password, opt_endpoint):
     """Construct an ProvenanceValidator object by logging in to the
     Pencildata server.
        Both the username and the password arguments may be given as str.
@@ -180,7 +186,7 @@ def login(username, password):
     populated by a dictionary that (among other things) contains the
     user's AccessToken. If the authentication fails, an exception is raised
     (actually a HTTPError: Bad Request)."""
-    url = ENDPOINT + 'token'
+    url = "{}{}".format(opt_endpoint, "/token/")
     data = {'userId': username, 'password': password}
     head = {"Content-Type": "application/json"}
     res = requests.request("POST", url, data=json.dumps(data), headers=head)
@@ -194,7 +200,7 @@ def make_hash(val):
 
 
 ### This function is to register hash to blockchain
-def register(login_data, hash, storage="pencil"):
+def register(login_data, hash, opt_endpoint, storage="pencil"):
     """Register a file (by its SHA-256 hash) in your Pencildata account.
     Warning: this method does not check if the file hash exists in the
     registers. It returns the asset id for the file.
@@ -205,7 +211,7 @@ def register(login_data, hash, storage="pencil"):
     datajson = {}
     datajson["hash"] = hash
     datajson["storage"] = storage
-    url = ENDPOINT + "register/"
+    url = "{}{}".format(opt_endpoint, "/register/")
     head = {"Content-Type": "application/json",
             "Authorization": "Bearer {0}".format(login_data['data']['accessToken'])}  # Request HTTP headers
     res = requests.request("POST", url, data=json.dumps(datajson), headers=head)
@@ -213,7 +219,7 @@ def register(login_data, hash, storage="pencil"):
 
 
 ### This function is to verify hash against hash in blockchain
-def verify(login_data, asset_id, hash, storage="pencil"):
+def verify(login_data, asset_id, hash, opt_endpoint, storage="pencil"):
     """Register a file (by its SHA-256 hash) in your Pencildata account.
     Warning: this method does not check if the file hash exists in the
     registers. It returns the asset id for the file.
@@ -226,7 +232,7 @@ def verify(login_data, asset_id, hash, storage="pencil"):
     datajson = {}
     datajson["hash"] = hash
     datajson["storage"] = storage
-    url = ENDPOINT + "verify/{}".format(str(asset_id))
+    url = "{}{}{}".format(opt_endpoint, "/verify/", str(asset_id))
     head = {"Content-Type": "application/json",
             "Authorization": "Bearer {0}".format(login_data['data']['accessToken'])}  # Request HTTP headers
     res = requests.request("GET", url, params=datajson, headers=head)
