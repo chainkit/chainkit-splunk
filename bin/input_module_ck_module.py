@@ -31,7 +31,7 @@ def collect_events(helper, ew):  # pylint: disable=too-many-locals
     opt_password = helper.get_arg('password')
     opt_storage = helper.get_arg('storage')
     opt_api = helper.get_arg('api')
-    opt_search_name = helper.get_arg("title")
+    opt_input_source = helper.get_arg("input_source")
     opt_query = helper.get_arg("query")
     opt_earliest_time = int(helper.get_arg("earliest_time"))
     opt_latest_time = int(helper.get_arg("latest_time"))
@@ -44,7 +44,7 @@ def collect_events(helper, ew):  # pylint: disable=too-many-locals
         "opt_storage": opt_storage,
         "opt_export_logs": opt_export_logs,
         "opt_query": opt_query,
-        "opt_search_name": opt_search_name,
+        "opt_input_source": opt_input_source,
         "opt_endpoint": opt_endpoint
     }
 
@@ -107,7 +107,7 @@ def register_api(reader, input_data, helper, ew):  # pylint: disable=too-many-lo
     res = {
         "hash": str(_hash),
         "query": input_data["opt_query"],
-        "title": input_data["opt_search_name"],
+        "input_source": input_data["opt_input_source"],
         "_time": _timestr,
         "running_script": _timestr,
         "assetId": entity_id.get("assetId"),
@@ -137,7 +137,7 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
             earliest_time = dict_res["earliest_time"]
             latest_time = dict_res["latest_time"]
             query_hash = dict_res["query"]
-            title = dict_res["title"]
+            opt_input_source = dict_res["input_source"]
             export_logs = dict_res["export_logs"]
 
             _latest_time = datetime.strptime(latest_time, '%Y-%m-%dT%H:%M:%S')
@@ -180,7 +180,7 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
                 "latest_time": latest_time,
                 "hash": hash_,
                 "query": query_hash,
-                "title": title,
+                "input_source": opt_input_source,
                 "running_script": _timestr,
                 "length": length,
                 "export_logs": export_logs

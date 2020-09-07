@@ -226,8 +226,8 @@
                         "label": "API"
                     },
                     {
-                        "field": "title",
-                        "label": "Title"
+                        "field": "input_source",
+                        "label": "Input_source"
                     },
                     {
                         "field": "query",
@@ -409,8 +409,8 @@
                             }
                         },
                         {
-                            "field": "title",
-                            "label": "Title",
+                            "field": "input_source",
+                            "label": "Input_source",
                             "help": "",
                             "required": true,
                             "type": "text",

@@ -78,7 +78,7 @@ fields = [
         validator=None
     ), 
     field.RestField(
-        'title',
+        'input_source',
         required=True,
         encrypted=False,
         default=None,

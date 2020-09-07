@@ -2,10 +2,26 @@
   <label>Chainkit Splunk log hardening</label>
   <search id="base_search">
     <query>
-      index="ck_verify" | table assetId, hash, query, length, title, verified
+      index="ck_verify" | table time, assetId, hash, query, length, input_source, verified
     </query>
+    <earliest>$time_token.earliest$</earliest>
+    <latest>$time_token.latest$</latest>
   </search>
   <fieldset submitButton="false" autoRun="true">
+    <input type="dropdown" token="api">
+      <label>API</label>
+      <choice value="ck_register">ck_register</choice>
+      <choice value="ck_verify">ck_verify</choice>
+      <default>ck_verify</default>
+      <fieldForLabel>api</fieldForLabel>
+      <fieldForValue>api</fieldForValue>
+      <search id="curr_search">
+        <query>search index="$api$" | table time, assetId, hash, query, length, input_source, verified</query>
+        <earliest>$time_token.earliest$</earliest>
+        <latest>$time_token.latest$</latest>
+      </search>
+      <initialValue>ck_verify</initialValue>
+    </input>
     <input type="dropdown" token="assetId">
       <label>Asset Id</label>
       <search base="base_search">
@@ -17,15 +33,15 @@
       <fieldForValue>assetId</fieldForValue>
       <default>*</default>
     </input>
-    <input type="dropdown" token="title">
-      <label>Title</label>
+    <input type="dropdown" token="input_source">
+      <label>Input_source</label>
       <search base="base_search">
-        <query>| stats count by title
+        <query>| stats count by input_source
       </query>
       </search>
       <choice value="*">All</choice>
-      <fieldForLabel>title</fieldForLabel>
-      <fieldForValue>title</fieldForValue>
+      <fieldForLabel>input_source</fieldForLabel>
+      <fieldForValue>input_source</fieldForValue>
       <default>*</default>
     </input>
     <input type="dropdown" token="hash">
@@ -39,20 +55,81 @@
       <fieldForValue>hash</fieldForValue>
       <default>*</default>
     </input>
+    <input type="dropdown" token="verified">
+      <label>Verify Status</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <fieldForLabel>verified</fieldForLabel>
+      <fieldForValue>verified</fieldForValue>
+      <search base="base_search">
+        <query>| stats count by verified</query>
+      </search>
+    </input>
+    <input type="time" token="time_token" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
   </fieldset>
   <row>
     <panel>
+      <title>Chainkit Events</title>
       <single>
-        <title>CK Total Events</title>
-        <search base="base_search">
-          <query>| search title=$title$ hash=$hash$ | stats count</query>
+        <search>
+          <query>search index="ck_register" | stats count</query>
+          <earliest>$time_token.earliest$</earliest>
+          <latest>$time_token.latest$</latest>
         </search>
         <option name="colorMode">block</option>
         <option name="drilldown">none</option>
         <option name="height">117</option>
-        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0x555"]</option>
+        <option name="rangeColors">["0x555","0x555","0x555","0x555"]</option>
         <option name="rangeValues">[0,30,70]</option>
-        <option name="underLabel">Total Events</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Registration Events</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search>
+          <query>search index="ck_verify" | stats count</query>
+          <earliest>$time_token.earliest$</earliest>
+          <latest>$time_token.latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">117</option>
+        <option name="rangeColors">["0x555","0x555","0x555","0x555"]</option>
+        <option name="rangeValues">[0,30,70]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Verification Events</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search base="base_search">
+          <query>| search verified="true" | stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">117</option>
+        <option name="rangeColors">["0x555","0x555","0x555","0x555"]</option>
+        <option name="rangeValues">[0,30,70]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Verify True Events</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search base="base_search">
+          <query>| search verified="false" | stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">117</option>
+        <option name="rangeColors">["0x555","0x555","0x555","0x555"]</option>
+        <option name="rangeValues">[0,30,70]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Verify Fail Events</option>
         <option name="useColors">1</option>
       </single>
     </panel>
@@ -68,7 +145,7 @@
       <chart>
         <title>Events by Input Source</title>
         <search base="base_search">
-          <query>| search title=$title$ hash=$hash$ | stats count by title</query>
+          <query>| search input_source=$input_source$ hash=$hash$ | stats count by input_source</query>
         </search>
         <option name="charting.chart">column</option>
         <option name="charting.chart.stackMode">default</option>
@@ -80,7 +157,7 @@
       <chart>
         <title>CK Verified Events (by system)</title>
         <search base="base_search">
-          <query>| search title=$title$ hash=$hash$ | stats count by verified</query>
+          <query>| search input_source=$input_source$ hash=$hash$ | stats count by verified</query>
         </search>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
@@ -93,8 +170,8 @@
     <panel>
       <table>
         <title>Event Details</title>
-        <search base="base_search">
-          <query>| search title=$title$ hash=$hash$</query>
+        <search base="curr_search">
+          <query>| search input_source=$input_source$ hash=$hash$</query>
         </search>
         <option name="drilldown">none</option>
       </table>

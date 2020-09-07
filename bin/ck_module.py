@@ -66,7 +66,7 @@ class ModInputck_module(modinput_wrapper.base_modinput.BaseModInput):
                                          description="",
                                          required_on_create=True,
                                          required_on_edit=False))
-        scheme.add_argument(smi.Argument("title", title="Title",
+        scheme.add_argument(smi.Argument("input_source", title="Input_source",
                                          description="",
                                          required_on_create=True,
                                          required_on_edit=False))
