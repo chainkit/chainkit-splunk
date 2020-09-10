@@ -83,7 +83,7 @@ def register_api(reader, input_data, helper, ew):  # pylint: disable=too-many-lo
     logs = []
     for result in reader:
         if isinstance(result, dict):
-            logs += [list(result)]
+            logs += [list(str(result))]
 
     logs.sort()
     length = len(logs)
@@ -156,7 +156,7 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
             logs = []
             for export_result in reader:
                 if isinstance(export_result, dict):
-                    logs += [list(export_result)]
+                    logs += [list(str(export_result))]
             logs.sort()
             length = len(logs)
             if export_logs == "raw_data":

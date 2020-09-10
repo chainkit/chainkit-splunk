@@ -1,4 +1,4 @@
-<form theme="light">
+<form refresh="8" theme="dark">
   <label>Chainkit Splunk log hardening</label>
   <search id="base_search">
     <query>
@@ -7,8 +7,8 @@
     <earliest>$time_token.earliest$</earliest>
     <latest>$time_token.latest$</latest>
   </search>
-  <fieldset submitButton="false" autoRun="true">
-    <input type="dropdown" token="api">
+  <fieldset submitButton="true" autoRun="true">
+    <input type="dropdown" token="api" searchWhenChanged="false">
       <label>API</label>
       <choice value="ck_register">ck_register</choice>
       <choice value="ck_verify">ck_verify</choice>
@@ -22,7 +22,7 @@
       </search>
       <initialValue>ck_verify</initialValue>
     </input>
-    <input type="dropdown" token="assetId">
+    <input type="dropdown" token="assetId" searchWhenChanged="false">
       <label>Asset Id</label>
       <search base="base_search">
         <query>| stats count by assetId
@@ -33,7 +33,7 @@
       <fieldForValue>assetId</fieldForValue>
       <default>*</default>
     </input>
-    <input type="dropdown" token="input_source">
+    <input type="dropdown" token="input_source" searchWhenChanged="false">
       <label>Input_source</label>
       <search base="base_search">
         <query>| stats count by input_source
@@ -44,7 +44,7 @@
       <fieldForValue>input_source</fieldForValue>
       <default>*</default>
     </input>
-    <input type="dropdown" token="hash">
+    <input type="dropdown" token="hash" searchWhenChanged="false">
       <label>Hash</label>
       <search base="base_search">
         <query>| stats count by hash
@@ -55,7 +55,7 @@
       <fieldForValue>hash</fieldForValue>
       <default>*</default>
     </input>
-    <input type="dropdown" token="verified">
+    <input type="dropdown" token="verified" searchWhenChanged="false">
       <label>Verify Status</label>
       <choice value="*">All</choice>
       <default>*</default>
@@ -65,7 +65,7 @@
         <query>| stats count by verified</query>
       </search>
     </input>
-    <input type="time" token="time_token" searchWhenChanged="true">
+    <input type="time" token="time_token" searchWhenChanged="false">
       <label>Time</label>
       <default>
         <earliest>-24h@h</earliest>
@@ -161,8 +161,7 @@
         </search>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
-        <option name="charting.legend.labels">[info, error]</option>
-        <option name="charting.seriesColors">[0x00FF00,0xFF0000]</option>
+        <option name="charting.fieldColors">{"true": 64A50F, "false": 0xFF0000}</option>
       </chart>
     </panel>
   </row>
