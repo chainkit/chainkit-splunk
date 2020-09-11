@@ -20,7 +20,8 @@ except ImportError:
 
 HOST = os.getenv("SPLUNK_HOST", "localhost")
 PORT = int(os.getenv("SPLUNK_PORT", "8089"))
-
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f%z'
+TIME_FORMAT_QUERY = '%Y-%m-%dT%H:%M:%S'
 
 def validate_input(helper, definition):  # pylint: disable=unused-argument
     pass
@@ -48,7 +49,7 @@ def collect_events(helper, ew):  # pylint: disable=too-many-locals
         "opt_endpoint": opt_endpoint
     }
 
-    now = datetime.now()
+    now = datetime.now().astimezone()
     now = now - timedelta(seconds=now.second)
 
     session_key = helper.context_meta['session_key']
@@ -56,10 +57,10 @@ def collect_events(helper, ew):  # pylint: disable=too-many-locals
     service = client.connect(host=HOST, port=PORT, token=session_key)
 
     earliest_time = (now - timedelta(seconds=-opt_earliest_time +
-                                     60)).strftime('%Y-%m-%dT%H:%M:%S')
+                                     60)).strftime(TIME_FORMAT_QUERY)
     latest_time = (
         now -
-        timedelta(seconds=-opt_latest_time + 60)).strftime('%Y-%m-%dT%H:%M:%S')
+        timedelta(seconds=-opt_latest_time + 60)).strftime(TIME_FORMAT_QUERY)
     input_data["earliest_time"] = earliest_time
     input_data["latest_time"] = latest_time
 
@@ -102,8 +103,8 @@ def register_api(reader, input_data, helper, ew):  # pylint: disable=too-many-lo
     logindata = login(opt_username, opt_password, opt_endpoint)
     entity_id = register(logindata, _hash, opt_endpoint, opt_storage)
 
-    _time = datetime.now()
-    _timestr = _time.strftime('%Y-%m-%dT%H:%M:%S')
+    _time = datetime.now().astimezone()
+    _timestr = _time.strftime(TIME_FORMAT)
     res = {
         "hash": str(_hash),
         "query": input_data["opt_query"],
@@ -140,7 +141,7 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
             opt_input_source = dict_res["input_source"]
             export_logs = dict_res["export_logs"]
 
-            _latest_time = datetime.strptime(latest_time, '%Y-%m-%dT%H:%M:%S')
+            _latest_time = datetime.strptime(latest_time, TIME_)
             kwargs_export = {
                 "earliest_time": earliest_time,
                 "latest_time": latest_time,
@@ -170,8 +171,8 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
                               opt_storage)
             verified = response.get("verified")
 
-            _time = datetime.now()
-            _timestr = _time.strftime('%Y-%m-%dT%H:%M:%S')
+            _time = datetime.now().astimezone()
+            _timestr = _time.strftime(TIME_FORMAT)
             res = {
                 "verified": verified,
                 "assetId": asset_id,
