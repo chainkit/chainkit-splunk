@@ -1,11 +1,11 @@
 {
-  "schemaVersion": "1.0.8",
+  "schemaVersion": "1.0.9",
   "info": {
     "title": "Chainkit",
     "id": {
       "group": null,
       "name": "TA-chainkit",
-      "version": "1.0.8"
+      "version": "1.0.9"
     },
     "author": [
       {
