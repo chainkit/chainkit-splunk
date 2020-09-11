@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 from datetime import datetime, timedelta
+from dateutil.tz import tzlocal
 
 import requests
 try:
@@ -49,7 +50,7 @@ def collect_events(helper, ew):  # pylint: disable=too-many-locals
         "opt_endpoint": opt_endpoint
     }
 
-    now = datetime.now().astimezone()
+    now = datetime.now(tzlocal())
     now = now - timedelta(seconds=now.second)
 
     session_key = helper.context_meta['session_key']
@@ -103,7 +104,7 @@ def register_api(reader, input_data, helper, ew):  # pylint: disable=too-many-lo
     logindata = login(opt_username, opt_password, opt_endpoint)
     entity_id = register(logindata, _hash, opt_endpoint, opt_storage)
 
-    _time = datetime.now().astimezone()
+    _time = datetime.now(tzlocal())
     _timestr = _time.strftime(TIME_FORMAT)
     res = {
         "hash": str(_hash),
@@ -141,7 +142,6 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
             opt_input_source = dict_res["input_source"]
             export_logs = dict_res["export_logs"]
 
-            _latest_time = datetime.strptime(latest_time, TIME_)
             kwargs_export = {
                 "earliest_time": earliest_time,
                 "latest_time": latest_time,
@@ -171,7 +171,7 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
                               opt_storage)
             verified = response.get("verified")
 
-            _time = datetime.now().astimezone()
+            _time = datetime.now(tzlocal())
             _timestr = _time.strftime(TIME_FORMAT)
             res = {
                 "verified": verified,
