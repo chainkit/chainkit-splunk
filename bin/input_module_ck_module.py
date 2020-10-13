@@ -101,8 +101,9 @@ def register_api(reader, input_data, helper, ew):  # pylint: disable=too-many-lo
     if opt_export_logs == "raw_data":
         logs = str(reader)
     elif opt_export_logs == "no_space":
-        logs = str(reader).replace(" ", "")
-        logs.sort()
+        no_space = str(reader).replace(" ", "")
+        sorted_logs = sorted(no_space)
+        logs = "".join(sorted_logs)
     _hash = make_hash(logs)
 
     logindata = login(opt_username, opt_password, opt_endpoint)
@@ -160,8 +161,9 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
             if export_logs == "raw_data":
                 logs = str(reader)
             elif export_logs == "no_space":
-                logs = str(reader).replace(" ", "")
-                logs.sort()
+                no_space = str(reader).replace(" ", "")
+                sorted_logs = sorted(no_space)
+                logs = "".join(sorted_logs)
             hash_ = make_hash(logs)
 
             logindata = login(opt_username, opt_password, opt_endpoint)
