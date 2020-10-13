@@ -65,30 +65,33 @@ def collect_events(helper, ew):  # pylint: disable=too-many-locals
     input_data["earliest_time"] = earliest_time
     input_data["latest_time"] = latest_time
 
-    kwargs_export = {
-        "earliest_time": earliest_time,
-        "latest_time": latest_time,
-        "search_mode": "normal",
-        "preview": False
-    }
-
-    exportsearch_results = service.jobs.export(str(opt_query), **kwargs_export)
-    reader = results.ResultsReader(exportsearch_results)
-
     if opt_api == "register":
+        kwargs_export = {
+            "earliest_time": earliest_time,
+            "latest_time": latest_time,
+            "exec_mode": "blocking",
+            "count": 0
+        }
+
+        exportsearch_results = service.jobs.create(str(opt_query), **kwargs_export)
+        result_stream = exportsearch_results.results()
+        reader = result_stream.read()
         register_api(reader, input_data, helper, ew)
     if opt_api == "verify":
+        kwargs_export = {
+            "earliest_time": earliest_time,
+            "latest_time": latest_time,
+            "search_mode": "normal",
+            "preview": False
+        }
+
+        exportsearch_results = service.jobs.export(str(opt_query), **kwargs_export)
+        reader = results.ResultsReader(exportsearch_results)
         verify_api(reader, input_data, service, helper, ew)
 
 
 def register_api(reader, input_data, helper, ew):  # pylint: disable=too-many-locals
-    logs = []
-    for result in reader:
-        if isinstance(result, dict):
-            logs += [list(str(result))]
 
-    logs.sort()
-    length = len(logs)
     opt_export_logs = input_data["opt_export_logs"]
     opt_username = input_data["opt_username"]
     opt_password = input_data["opt_password"]
@@ -96,9 +99,10 @@ def register_api(reader, input_data, helper, ew):  # pylint: disable=too-many-lo
     opt_endpoint = input_data["opt_endpoint"]
 
     if opt_export_logs == "raw_data":
-        logs = str(logs)
+        logs = str(reader)
     elif opt_export_logs == "no_space":
-        logs = str(logs).replace(" ", "")
+        logs = str(reader).replace(" ", "")
+        logs.sort()
     _hash = make_hash(logs)
 
     logindata = login(opt_username, opt_password, opt_endpoint)
@@ -115,7 +119,6 @@ def register_api(reader, input_data, helper, ew):  # pylint: disable=too-many-lo
         "assetId": entity_id.get("assetId"),
         "earliest_time": input_data["earliest_time"],
         "latest_time": input_data["latest_time"],
-        "length": length,
         "export_logs": opt_export_logs
     }
 
@@ -145,25 +148,20 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
             kwargs_export = {
                 "earliest_time": earliest_time,
                 "latest_time": latest_time,
-                "search_mode": "normal",
-                "preview": False
+                "count": 0,
+                "exec_mode": "blocking"
             }
-
             searchquery_export = query_hash
+            exportsearch_results = service.jobs.create(str(searchquery_export), **kwargs_export)
 
-            exportsearch_results = service.jobs.export(str(searchquery_export),
-                                                       **kwargs_export)
-            reader = results.ResultsReader(exportsearch_results)
-            logs = []
-            for export_result in reader:
-                if isinstance(export_result, dict):
-                    logs += [list(str(export_result))]
-            logs.sort()
-            length = len(logs)
+            result_stream = exportsearch_results.results()
+            reader = result_stream.read()
+
             if export_logs == "raw_data":
-                logs = str(logs)
+                logs = str(reader)
             elif export_logs == "no_space":
-                logs = str(logs).replace(" ", "")
+                logs = str(reader).replace(" ", "")
+                logs.sort()
             hash_ = make_hash(logs)
 
             logindata = login(opt_username, opt_password, opt_endpoint)
@@ -183,7 +181,6 @@ def verify_api(reader, input_data, service, helper, ew):  # pylint: disable=too-
                 "query": query_hash,
                 "input_source": opt_input_source,
                 "running_script": _timestr,
-                "length": length,
                 "export_logs": export_logs
             }
 
