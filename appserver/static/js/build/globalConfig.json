@@ -348,16 +348,25 @@
                             "label": "Endpoint",
                             "help": "",
                             "required": true,
-                            "type": "text",
+                            "type": "singleSelect",
                             "defaultValue": "https://api.chainkit.com",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
-                                }
-                            ]
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "value": "https://api.chainkit.com",
+                                        "label": "https://api.chainkit.com"
+                                    },
+                                    {
+                                        "value": "https://api.pencildata.com",
+                                        "label": "https://api.pencildata.com"
+                                    },
+                                    {
+                                        "value": "https://demo-api.chainkit.com",
+                                        "label": "https://demo-api.chainkit.com"
+                                    }
+                                ]
+                            }
                         },
                         {
                             "field": "storage",
@@ -488,6 +497,212 @@
                                     }
                                 ]
                             }
+                        }
+                    ]
+                },
+                {
+                    "name": "ck_logstash",
+                    "title": "ck_logstash",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "interval",
+                            "label": "Interval",
+                            "type": "text",
+                            "required": true,
+                            "help": "Time interval of input in seconds.",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
+                                    "errorMsg": "Interval must be an integer."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "blackList": "^_.*$",
+                                "createSearchChoice": true
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "username",
+                            "label": "Username",
+                            "help": "",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "password",
+                            "label": "Password",
+                            "help": "",
+                            "required": true,
+                            "type": "text",
+                            "encrypted": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of password is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "endpoint",
+                            "label": "Endpoint",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "defaultValue": "https://api.chainkit.com",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "value": "https://api.chainkit.com",
+                                        "label": "https://api.chainkit.com"
+                                    },
+                                    {
+                                        "value": "https://api.pencildata.com",
+                                        "label": "https://api.pencildata.com"
+                                    },
+                                    {
+                                        "value": "https://demo-api.chainkit.com",
+                                        "label": "https://demo-api.chainkit.com"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "field": "storage",
+                            "label": "Storage",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "defaultValue": "pencil",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "value": "pencil",
+                                        "label": "Pencil"
+                                    },
+                                    {
+                                        "value": "public",
+                                        "label": "Ethereum"
+                                    },
+                                    {
+                                        "value": "private",
+                                        "label": "Sawtooth"
+                                    },
+                                    {
+                                        "value": "concord",
+                                        "label": "VMware"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "field": "api",
+                            "label": "API",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "value": "verify",
+                                        "label": "Verify"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "field": "query",
+                            "label": "Query",
+                            "help": "",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "earliest_time",
+                            "label": "Earliest_time",
+                            "help": "",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "latest_time",
+                            "label": "Latest_time",
+                            "help": "",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
                         }
                     ]
                 }
